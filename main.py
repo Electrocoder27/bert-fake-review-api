@@ -1,6 +1,6 @@
 import os
 import zipfile
-import requests
+import gdown
 from fastapi import FastAPI
 from transformers import AutoTokenizer, AutoModelForSequenceClassification
 import torch
@@ -9,23 +9,25 @@ app = FastAPI()
 
 MODEL_DIR = "bert_op_spam_model"
 ZIP_PATH = "bert_op_spam_model.zip"
-GOOGLE_DRIVE_URL = "https://drive.google.com/uc?export=download&id=1ypaDFgM4d7fwTWAz1YIWch7BHyIV5gCy"
+GOOGLE_DRIVE_URL = "https://drive.google.com/uc?id=1ypaDFgM4d7fwTWAz1YIWch7BHyIV5gCy"
 
 def download_and_extract_model():
     if not os.path.exists(MODEL_DIR):
         print("Model not found. Downloading...")
-        response = requests.get(GOOGLE_DRIVE_URL)
-        with open(ZIP_PATH, "wb") as f:
-            f.write(response.content)
+
+        # Download from Google Drive using gdown
+        gdown.download(GOOGLE_DRIVE_URL, ZIP_PATH, quiet=False)
 
         print("Extracting model...")
         with zipfile.ZipFile(ZIP_PATH, 'r') as zip_ref:
-            zip_ref.extractall()
+            zip_ref.extractall(MODEL_DIR)
+
         os.remove(ZIP_PATH)
         print("Model ready!")
 
 download_and_extract_model()
 
+# Load model and tokenizer
 tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
 model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
 
