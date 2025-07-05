@@ -9,7 +9,7 @@ app = FastAPI()
 
 MODEL_DIR = "bert_op_spam_model"
 ZIP_PATH = "bert_op_spam_model.zip"
-GOOGLE_DRIVE_URL = "https://drive.google.com/uc?id=1ypaDFgM4d7fwTWAz1YIWch7BHyIV5gCy"
+GOOGLE_DRIVE_URL = "https://drive.google.com/uc?id=1f4QyHVnLGmXh-mqjvtRQzHFv_xS7z69K"
 
 def download_and_extract_model():
     if not os.path.exists(MODEL_DIR):
@@ -25,11 +25,12 @@ def download_and_extract_model():
         os.remove(ZIP_PATH)
         print("Model ready!")
 
+# Download and extract the model if not already done
 download_and_extract_model()
 
-# Load model and tokenizer
+# Load model and tokenizer from the extracted directory
 tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)
-model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR)
+model = AutoModelForSequenceClassification.from_pretrained(MODEL_DIR, use_safetensors=True)
 
 @app.get("/")
 def root():
